@@ -5,11 +5,113 @@
 	"version": "0.1.0",
 	"title": "Slider",
 	"category": "widgets",
-	"icon": "smiley",
-	"description": "Example block scaffolded with Create Block tool.",
+	"icon": "images-alt",
+	"description": "Responsive slider z pełną konfiguracją i Swiperjs",
 	"example": {},
 	"supports": {
-		"html": false
+		"html": false,
+		"align": ["full", "wide"]
+	},
+	"attributes": {
+		"slides": {
+			"type": "array",
+			"default": [
+				{
+					"id": "slide-1",
+					"content": "Slide 1",
+					"imageId": 0,
+					"imageUrl": "",
+					"imageAlt": ""
+				},
+				{
+					"id": "slide-2",
+					"content": "Slide 2",
+					"imageId": 0,
+					"imageUrl": "",
+					"imageAlt": ""
+				}
+			]
+		},
+		"spaceBetween": {
+			"type": "number",
+			"default": 10
+		},
+		"slidesPerView": {
+			"type": "number",
+			"default": 1
+		},
+		"enablePagination": {
+			"type": "boolean",
+			"default": true
+		},
+		"paginationType": {
+			"type": "string",
+			"default": "bullets"
+		},
+		"paginationColor": {
+			"type": "string",
+			"default": "#999999"
+		},
+		"paginationActiveColor": {
+			"type": "string",
+			"default": "#333333"
+		},
+		"enableNavigation": {
+			"type": "boolean",
+			"default": true
+		},
+		"navigationColor": {
+			"type": "string",
+			"default": "#333333"
+		},
+		"navigationSize": {
+			"type": "number",
+			"default": 30
+		},
+		"enableAutoplay": {
+			"type": "boolean",
+			"default": false
+		},
+		"autoplayDelay": {
+			"type": "number",
+			"default": 5000
+		},
+		"autoplayDisableOnInteraction": {
+			"type": "boolean",
+			"default": true
+		},
+		"loop": {
+			"type": "boolean",
+			"default": true
+		},
+		"effect": {
+			"type": "string",
+			"default": "slide"
+		},
+		"speed": {
+			"type": "number",
+			"default": 300
+		},
+		"containerWidth": {
+			"type": "string",
+			"default": "100%"
+		},
+		"containerMargin": {
+			"type": "string",
+			"default": "0"
+		},
+		"containerPadding": {
+			"type": "string",
+			"default": "0"
+		},
+		"slideHeight": {
+			"type": "string",
+			"default": "320px"
+		},
+		"fullWidth": {
+			"type": "boolean",
+			"default": false
+		}
 	},
 	"textdomain": "slider",
 	"editorScript": "file:./index.js",
