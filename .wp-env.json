@@ -1,0 +1,8 @@
+{
+  "core": null,
+  "phpVersion": "8.2",
+  "plugins": [ "./slider" ],
+  "port": 8888,
+  "testsPort": 8889,
+	"testsEnvironment": false
+}

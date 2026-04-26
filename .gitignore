@@ -1,0 +1,21 @@
+# WordPress core
+wordpress/
+wp-admin/
+wp-includes/
+
+# Wrażliwe dane
+wp-config.php
+.env
+
+# Media
+wp-content/uploads/
+
+# Zależności i build
+node_modules/
+vendor/
+*.log
+
+# OS / Windows
+Thumbs.db
+desktop.ini
+.DS_Store
