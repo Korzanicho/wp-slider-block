@@ -1,5 +1,5 @@
-import { __, sprintf } from '@wordpress/i18n';
-import { useEffect, useRef } from '@wordpress/element';
+import { __ } from '@wordpress/i18n';
+import { useEffect, useRef, useState } from '@wordpress/element';
 import {
 	useBlockProps,
 	InspectorControls,
@@ -54,6 +54,7 @@ function normalizeCssSize( value, fallback ) {
 export default function Edit( { attributes, setAttributes } ) {
 	const previewRef = useRef( null );
 	const previewInstanceRef = useRef( null );
+	const [ draggedSlideIndex, setDraggedSlideIndex ] = useState( null );
 
 	const {
 		slides,
@@ -157,6 +158,30 @@ export default function Edit( { attributes, setAttributes } ) {
 			imageAlt: '',
 		};
 		setAttributes( { slides: updatedSlides } );
+	};
+
+	const handleMoveSlide = ( fromIndex, toIndex ) => {
+		if (
+			fromIndex === toIndex ||
+			toIndex < 0 ||
+			toIndex >= slides.length
+		) {
+			return;
+		}
+
+		const updatedSlides = [ ...slides ];
+		const [ movedSlide ] = updatedSlides.splice( fromIndex, 1 );
+		updatedSlides.splice( toIndex, 0, movedSlide );
+		setAttributes( { slides: updatedSlides } );
+	};
+
+	const handleDropSlide = ( targetIndex ) => {
+		if ( draggedSlideIndex === null ) {
+			return;
+		}
+
+		handleMoveSlide( draggedSlideIndex, targetIndex );
+		setDraggedSlideIndex( null );
 	};
 
 	useEffect( () => {
@@ -309,22 +334,84 @@ export default function Edit( { attributes, setAttributes } ) {
 					initialOpen={ true }
 				>
 					<div className="slider-slides-list">
-						{ slides.map( ( slide, index ) => {
-							const slideCaptionLabel = sprintf(
-								/* translators: %d: Slide number in editor settings. */
-								__( 'Slide %d caption', 'slider' ),
-								index + 1
-							);
-
-							return (
-								<div key={ slide.id } className="slide-item">
-									<TextControl
-										label={ slideCaptionLabel }
-										value={ slide.content }
-										onChange={ ( value ) =>
-											handleUpdateSlide( index, value )
-										}
-									/>
+						{ slides.map( ( slide, index ) => (
+							<div
+								key={ slide.id }
+								className={ `slide-item${
+									draggedSlideIndex === index
+										? ' is-dragging'
+										: ''
+								}` }
+								draggable
+								onDragStart={ () =>
+									setDraggedSlideIndex( index )
+								}
+								onDragOver={ ( event ) =>
+									event.preventDefault()
+								}
+								onDrop={ () => handleDropSlide( index ) }
+								onDragEnd={ () => setDraggedSlideIndex( null ) }
+							>
+								<div className="slide-item-header">
+									<span className="slide-item-drag-handle">
+										::
+									</span>
+									<strong>
+										{ __( 'Slide', 'slider' ) }{ ' ' }
+										{ index + 1 }
+									</strong>
+									<div className="slide-item-sort-controls">
+										<Button
+											variant="secondary"
+											onClick={ () =>
+												handleMoveSlide(
+													index,
+													index - 1
+												)
+											}
+											disabled={ index === 0 }
+										>
+											{ __( 'Up', 'slider' ) }
+										</Button>
+										<Button
+											variant="secondary"
+											onClick={ () =>
+												handleMoveSlide(
+													index,
+													index + 1
+												)
+											}
+											disabled={
+												index === slides.length - 1
+											}
+										>
+											{ __( 'Down', 'slider' ) }
+										</Button>
+									</div>
+								</div>
+								<TextControl
+									value={ slide.content }
+									onChange={ ( value ) =>
+										handleUpdateSlide( index, value )
+									}
+									placeholder={ __(
+										'Slide caption',
+										'slider'
+									) }
+								/>
+								{ slide.imageUrl && (
+									<div className="slider-slide-image-preview">
+										<img
+											src={ slide.imageUrl }
+											alt={
+												slide.imageAlt ||
+												slide.content ||
+												''
+											}
+										/>
+									</div>
+								) }
+								<div className="slide-item-media-controls">
 									<MediaUploadCheck>
 										<MediaUpload
 											onSelect={ ( media ) =>
@@ -339,14 +426,10 @@ export default function Edit( { attributes, setAttributes } ) {
 												<Button
 													variant="secondary"
 													onClick={ open }
-													style={ {
-														marginTop: '8px',
-														marginRight: '8px',
-													} }
 												>
 													{ slide.imageUrl
 														? __(
-																'Replace image',
+																'Replace',
 																'slider'
 														  )
 														: __(
@@ -364,27 +447,22 @@ export default function Edit( { attributes, setAttributes } ) {
 											onClick={ () =>
 												handleSlideImageRemove( index )
 											}
-											style={ { marginTop: '8px' } }
 										>
 											{ __( 'Remove image', 'slider' ) }
 										</Button>
 									) }
 									<Button
 										isDestructive
+										variant="secondary"
 										onClick={ () =>
 											handleRemoveSlide( index )
 										}
-										style={ {
-											marginTop: '8px',
-											display: 'block',
-										} }
 									>
-										{ __( 'Remove Slide', 'slider' ) }
+										{ __( 'Remove slide', 'slider' ) }
 									</Button>
-									<hr />
 								</div>
-							);
-						} ) }
+							</div>
+						) ) }
 					</div>
 					<Button isPrimary onClick={ handleAddSlide }>
 						{ __( 'Add Slide', 'slider' ) }

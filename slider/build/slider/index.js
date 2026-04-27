@@ -50,6 +50,7 @@ function Edit({
 }) {
   const previewRef = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_1__.useRef)(null);
   const previewInstanceRef = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_1__.useRef)(null);
+  const [draggedSlideIndex, setDraggedSlideIndex] = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_1__.useState)(null);
   const {
     slides,
     spaceBetween,
@@ -148,6 +149,24 @@ function Edit({
     setAttributes({
       slides: updatedSlides
     });
+  };
+  const handleMoveSlide = (fromIndex, toIndex) => {
+    if (fromIndex === toIndex || toIndex < 0 || toIndex >= slides.length) {
+      return;
+    }
+    const updatedSlides = [...slides];
+    const [movedSlide] = updatedSlides.splice(fromIndex, 1);
+    updatedSlides.splice(toIndex, 0, movedSlide);
+    setAttributes({
+      slides: updatedSlides
+    });
+  };
+  const handleDropSlide = targetIndex => {
+    if (draggedSlideIndex === null) {
+      return;
+    }
+    handleMoveSlide(draggedSlideIndex, targetIndex);
+    setDraggedSlideIndex(null);
   };
   (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_1__.useEffect)(() => {
     if (!previewRef.current) {
@@ -248,16 +267,47 @@ function Edit({
         initialOpen: true,
         children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_7__.jsx)("div", {
           className: "slider-slides-list",
-          children: slides.map((slide, index) => {
-            const slideCaptionLabel = (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_0__.sprintf)(/* translators: %d: Slide number in editor settings. */
-            (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_0__.__)('Slide %d caption', 'slider'), index + 1);
-            return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_7__.jsxs)("div", {
-              className: "slide-item",
-              children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_7__.jsx)(_wordpress_components__WEBPACK_IMPORTED_MODULE_5__.TextControl, {
-                label: slideCaptionLabel,
-                value: slide.content,
-                onChange: value => handleUpdateSlide(index, value)
-              }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_7__.jsx)(_wordpress_block_editor__WEBPACK_IMPORTED_MODULE_2__.MediaUploadCheck, {
+          children: slides.map((slide, index) => /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_7__.jsxs)("div", {
+            className: `slide-item${draggedSlideIndex === index ? ' is-dragging' : ''}`,
+            draggable: true,
+            onDragStart: () => setDraggedSlideIndex(index),
+            onDragOver: event => event.preventDefault(),
+            onDrop: () => handleDropSlide(index),
+            onDragEnd: () => setDraggedSlideIndex(null),
+            children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_7__.jsxs)("div", {
+              className: "slide-item-header",
+              children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_7__.jsx)("span", {
+                className: "slide-item-drag-handle",
+                children: "::"
+              }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_7__.jsxs)("strong", {
+                children: [(0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_0__.__)('Slide', 'slider'), ' ', index + 1]
+              }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_7__.jsxs)("div", {
+                className: "slide-item-sort-controls",
+                children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_7__.jsx)(_wordpress_components__WEBPACK_IMPORTED_MODULE_5__.Button, {
+                  variant: "secondary",
+                  onClick: () => handleMoveSlide(index, index - 1),
+                  disabled: index === 0,
+                  children: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_0__.__)('Up', 'slider')
+                }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_7__.jsx)(_wordpress_components__WEBPACK_IMPORTED_MODULE_5__.Button, {
+                  variant: "secondary",
+                  onClick: () => handleMoveSlide(index, index + 1),
+                  disabled: index === slides.length - 1,
+                  children: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_0__.__)('Down', 'slider')
+                })]
+              })]
+            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_7__.jsx)(_wordpress_components__WEBPACK_IMPORTED_MODULE_5__.TextControl, {
+              value: slide.content,
+              onChange: value => handleUpdateSlide(index, value),
+              placeholder: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_0__.__)('Slide caption', 'slider')
+            }), slide.imageUrl && /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_7__.jsx)("div", {
+              className: "slider-slide-image-preview",
+              children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_7__.jsx)("img", {
+                src: slide.imageUrl,
+                alt: slide.imageAlt || slide.content || ''
+              })
+            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_7__.jsxs)("div", {
+              className: "slide-item-media-controls",
+              children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_7__.jsx)(_wordpress_block_editor__WEBPACK_IMPORTED_MODULE_2__.MediaUploadCheck, {
                 children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_7__.jsx)(_wordpress_block_editor__WEBPACK_IMPORTED_MODULE_2__.MediaUpload, {
                   onSelect: media => handleSlideImageSelect(index, media),
                   allowedTypes: ['image'],
@@ -267,32 +317,22 @@ function Edit({
                   }) => /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_7__.jsx)(_wordpress_components__WEBPACK_IMPORTED_MODULE_5__.Button, {
                     variant: "secondary",
                     onClick: open,
-                    style: {
-                      marginTop: '8px',
-                      marginRight: '8px'
-                    },
-                    children: slide.imageUrl ? (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_0__.__)('Replace image', 'slider') : (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_0__.__)('Select image', 'slider')
+                    children: slide.imageUrl ? (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_0__.__)('Replace', 'slider') : (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_0__.__)('Select image', 'slider')
                   })
                 })
               }), slide.imageUrl && /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_7__.jsx)(_wordpress_components__WEBPACK_IMPORTED_MODULE_5__.Button, {
                 isDestructive: true,
                 variant: "secondary",
                 onClick: () => handleSlideImageRemove(index),
-                style: {
-                  marginTop: '8px'
-                },
                 children: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_0__.__)('Remove image', 'slider')
               }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_7__.jsx)(_wordpress_components__WEBPACK_IMPORTED_MODULE_5__.Button, {
                 isDestructive: true,
+                variant: "secondary",
                 onClick: () => handleRemoveSlide(index),
-                style: {
-                  marginTop: '8px',
-                  display: 'block'
-                },
-                children: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_0__.__)('Remove Slide', 'slider')
-              }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_7__.jsx)("hr", {})]
-            }, slide.id);
-          })
+                children: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_0__.__)('Remove slide', 'slider')
+              })]
+            })]
+          }, slide.id))
         }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_7__.jsx)(_wordpress_components__WEBPACK_IMPORTED_MODULE_5__.Button, {
           isPrimary: true,
           onClick: handleAddSlide,
