@@ -4,14 +4,31 @@
  */
 
 import Swiper from 'swiper';
-import { Navigation, Pagination, Autoplay, EffectFade, EffectCube, EffectCoverflow, EffectFlip } from 'swiper/modules';
+import {
+	Navigation,
+	Pagination,
+	Autoplay,
+	EffectFade,
+	EffectCube,
+	EffectCoverflow,
+	EffectFlip,
+} from 'swiper/modules';
 
-// Register Swiper modules
-Swiper.use( [ Navigation, Pagination, Autoplay, EffectFade, EffectCube, EffectCoverflow, EffectFlip ] );
+const SWIPER_MODULES = [
+	Navigation,
+	Pagination,
+	Autoplay,
+	EffectFade,
+	EffectCube,
+	EffectCoverflow,
+	EffectFlip,
+];
 
 function initSliders() {
 	// Find all slider elements
-	const sliders = document.querySelectorAll( '.wp-block-webkor-slider .swiper' );
+	const sliders = document.querySelectorAll(
+		'.wp-block-webkor-slider .swiper'
+	);
 
 	sliders.forEach( ( sliderElement ) => {
 		if ( sliderElement.classList.contains( 'swiper-initialized' ) ) {
@@ -19,14 +36,37 @@ function initSliders() {
 		}
 
 		try {
-			// Get configuration from data attribute
-			const configData = sliderElement.getAttribute( 'data-swiper-config' );
+			const configData =
+				sliderElement.getAttribute( 'data-swiper-config' );
 			const config = configData ? JSON.parse( configData ) : {};
+			const paginationEl =
+				sliderElement.querySelector( '.swiper-pagination' );
+			const prevEl = sliderElement.querySelector( '.swiper-button-prev' );
+			const nextEl = sliderElement.querySelector( '.swiper-button-next' );
 
-			// Initialize Swiper with the configuration
-			new Swiper( sliderElement, config );
-		} catch ( error ) {
-			console.error( 'Error initializing Swiper:', error );
+			const runtimeConfig = {
+				...config,
+				modules: SWIPER_MODULES,
+				pagination:
+					config.pagination && paginationEl
+						? {
+								...config.pagination,
+								el: paginationEl,
+						  }
+						: false,
+				navigation:
+					config.navigation && prevEl && nextEl
+						? {
+								...config.navigation,
+								prevEl,
+								nextEl,
+						  }
+						: false,
+			};
+
+			new Swiper( sliderElement, runtimeConfig );
+		} catch {
+			// Ignore invalid slider configs in frontend.
 		}
 	} );
 }

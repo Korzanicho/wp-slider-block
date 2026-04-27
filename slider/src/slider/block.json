@@ -6,11 +6,11 @@
 	"title": "Slider",
 	"category": "widgets",
 	"icon": "images-alt",
-	"description": "Responsive slider z pełną konfiguracją i Swiperjs",
+	"description": "Responsive slider with pagination, navigation, autoplay, and loop options.",
 	"example": {},
 	"supports": {
 		"html": false,
-		"align": ["full", "wide"]
+		"align": [ "full", "wide" ]
 	},
 	"attributes": {
 		"slides": {
@@ -39,6 +39,14 @@
 		"slidesPerView": {
 			"type": "number",
 			"default": 1
+		},
+		"slidesPerViewTablet": {
+			"type": "number",
+			"default": 0
+		},
+		"slidesPerViewMobile": {
+			"type": "number",
+			"default": 0
 		},
 		"enablePagination": {
 			"type": "boolean",
@@ -107,6 +115,14 @@
 		"slideHeight": {
 			"type": "string",
 			"default": "320px"
+		},
+		"heightMode": {
+			"type": "string",
+			"default": "fixed"
+		},
+		"aspectRatio": {
+			"type": "string",
+			"default": "16/9"
 		},
 		"fullWidth": {
 			"type": "boolean",

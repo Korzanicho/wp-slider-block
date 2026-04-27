@@ -5,6 +5,8 @@ export default function save( { attributes } ) {
 		slides,
 		spaceBetween,
 		slidesPerView,
+		slidesPerViewTablet,
+		slidesPerViewMobile,
 		enablePagination,
 		paginationType,
 		paginationColor,
@@ -22,20 +24,31 @@ export default function save( { attributes } ) {
 		containerMargin,
 		containerPadding,
 		slideHeight,
+		heightMode,
+		aspectRatio,
 		fullWidth,
 	} = attributes;
 
 	const swiperConfig = {
 		spaceBetween,
-		slidesPerView,
+		slidesPerView:
+			slidesPerViewMobile > 0 ? slidesPerViewMobile : slidesPerView,
+		breakpoints: {
+			480: {
+				slidesPerView:
+					slidesPerViewTablet > 0
+						? slidesPerViewTablet
+						: slidesPerView,
+			},
+			768: { slidesPerView },
+		},
 		loop,
 		effect,
 		speed,
 		autoplay: enableAutoplay
 			? {
 					delay: autoplayDelay,
-					disableOnInteraction:
-						autoplayDisableOnInteraction,
+					disableOnInteraction: autoplayDisableOnInteraction,
 			  }
 			: false,
 		pagination: enablePagination
@@ -91,19 +104,25 @@ export default function save( { attributes } ) {
 						<div
 							key={ slide.id }
 							className="swiper-slide"
-							style={ {
-								minHeight: slideHeight || '320px',
-							} }
+							style={
+								heightMode === 'aspect-ratio'
+									? { aspectRatio }
+									: { height: slideHeight || '320px' }
+							}
 						>
 							{ slide.imageUrl && (
 								<img
 									src={ slide.imageUrl }
-									alt={ slide.imageAlt || slide.content || '' }
+									alt={
+										slide.imageAlt || slide.content || ''
+									}
 									className="slider-slide-image"
 								/>
 							) }
 							{ slide.content && (
-								<p className="slider-slide-caption">{ slide.content }</p>
+								<p className="slider-slide-caption">
+									{ slide.content }
+								</p>
 							) }
 						</div>
 					) ) }

@@ -1,4 +1,4 @@
-import { __ } from '@wordpress/i18n';
+import { __, sprintf } from '@wordpress/i18n';
 import { useEffect, useRef } from '@wordpress/element';
 import {
 	useBlockProps,
@@ -25,11 +25,10 @@ import {
 	ColorPalette,
 	RangeControl,
 	Button,
-	__experimentalInputControl as InputControl,
 } from '@wordpress/components';
 import './editor.scss';
 
-Swiper.use( [
+const SWIPER_MODULES = [
 	Navigation,
 	Pagination,
 	Autoplay,
@@ -37,7 +36,7 @@ Swiper.use( [
 	EffectCube,
 	EffectCoverflow,
 	EffectFlip,
-] );
+];
 
 export default function Edit( { attributes, setAttributes } ) {
 	const previewRef = useRef( null );
@@ -47,6 +46,8 @@ export default function Edit( { attributes, setAttributes } ) {
 		slides,
 		spaceBetween,
 		slidesPerView,
+		slidesPerViewTablet,
+		slidesPerViewMobile,
 		enablePagination,
 		paginationType,
 		paginationColor,
@@ -64,6 +65,8 @@ export default function Edit( { attributes, setAttributes } ) {
 		containerMargin,
 		containerPadding,
 		slideHeight,
+		heightMode,
+		aspectRatio,
 		fullWidth,
 	} = attributes;
 
@@ -71,7 +74,9 @@ export default function Edit( { attributes, setAttributes } ) {
 		className: fullWidth ? 'wp-block-webkor-slider--full-width' : '',
 		style: {
 			width: fullWidth ? '100vw' : containerWidth,
-			marginLeft: fullWidth ? 'calc(-50vw + 50%)' : '0',
+			margin: fullWidth ? undefined : containerMargin,
+			padding: containerPadding,
+			marginLeft: fullWidth ? 'calc(-50vw + 50%)' : undefined,
 		},
 	} );
 
@@ -146,13 +151,28 @@ export default function Edit( { attributes, setAttributes } ) {
 			return undefined;
 		}
 
-		const paginationEl = swiperElement.querySelector( '.swiper-pagination' );
+		const paginationEl =
+			swiperElement.querySelector( '.swiper-pagination' );
 		const nextEl = swiperElement.querySelector( '.swiper-button-next' );
 		const prevEl = swiperElement.querySelector( '.swiper-button-prev' );
 
 		previewInstanceRef.current = new Swiper( swiperElement, {
+			modules: SWIPER_MODULES,
+			breakpointsBase: 'container',
+			observeParents: true,
+			observer: true,
 			spaceBetween,
-			slidesPerView,
+			slidesPerView:
+				slidesPerViewMobile > 0 ? slidesPerViewMobile : slidesPerView,
+			breakpoints: {
+				480: {
+					slidesPerView:
+						slidesPerViewTablet > 0
+							? slidesPerViewTablet
+							: slidesPerView,
+				},
+				768: { slidesPerView },
+			},
 			loop,
 			effect,
 			speed,
@@ -177,7 +197,7 @@ export default function Edit( { attributes, setAttributes } ) {
 							nextEl,
 					  }
 					: false,
-		});
+		} );
 
 		return () => {
 			if ( previewInstanceRef.current ) {
@@ -189,6 +209,8 @@ export default function Edit( { attributes, setAttributes } ) {
 		slides,
 		spaceBetween,
 		slidesPerView,
+		slidesPerViewTablet,
+		slidesPerViewMobile,
 		enablePagination,
 		paginationType,
 		enableNavigation,
@@ -203,76 +225,133 @@ export default function Edit( { attributes, setAttributes } ) {
 	return (
 		<>
 			<InspectorControls>
-				{/* Slides Management */}
-				<PanelBody title={ __( 'Slides', 'slider' ) } initialOpen={ true }>
+				{ /* Slides Management */ }
+				<PanelBody
+					title={ __( 'Slides', 'slider' ) }
+					initialOpen={ true }
+				>
 					<div className="slider-slides-list">
-						{ slides.map( ( slide, index ) => (
-							<div key={ slide.id } className="slide-item">
-								<TextControl
-									label={ __( `Slide ${ index + 1 } caption`, 'slider' ) }
-									value={ slide.content }
-									onChange={ ( value ) =>
-										handleUpdateSlide( index, value )
-									}
-								/>
-								<MediaUploadCheck>
-									<MediaUpload
-										onSelect={ ( media ) =>
-											handleSlideImageSelect( index, media )
+						{ slides.map( ( slide, index ) => {
+							const slideCaptionLabel = sprintf(
+								/* translators: %d: Slide number in editor settings. */
+								__( 'Slide %d caption', 'slider' ),
+								index + 1
+							);
+
+							return (
+								<div key={ slide.id } className="slide-item">
+									<TextControl
+										label={ slideCaptionLabel }
+										value={ slide.content }
+										onChange={ ( value ) =>
+											handleUpdateSlide( index, value )
 										}
-										allowedTypes={ [ 'image' ] }
-										value={ slide.imageId }
-										render={ ( { open } ) => (
-											<Button
-												variant="secondary"
-												onClick={ open }
-												style={ { marginTop: '8px', marginRight: '8px' } }
-											>
-												{ slide.imageUrl
-													? __( 'Replace image', 'slider' )
-													: __( 'Select image', 'slider' ) }
-											</Button>
-										) }
 									/>
-								</MediaUploadCheck>
-								{ slide.imageUrl && (
+									<MediaUploadCheck>
+										<MediaUpload
+											onSelect={ ( media ) =>
+												handleSlideImageSelect(
+													index,
+													media
+												)
+											}
+											allowedTypes={ [ 'image' ] }
+											value={ slide.imageId }
+											render={ ( { open } ) => (
+												<Button
+													variant="secondary"
+													onClick={ open }
+													style={ {
+														marginTop: '8px',
+														marginRight: '8px',
+													} }
+												>
+													{ slide.imageUrl
+														? __(
+																'Replace image',
+																'slider'
+														  )
+														: __(
+																'Select image',
+																'slider'
+														  ) }
+												</Button>
+											) }
+										/>
+									</MediaUploadCheck>
+									{ slide.imageUrl && (
+										<Button
+											isDestructive
+											variant="secondary"
+											onClick={ () =>
+												handleSlideImageRemove( index )
+											}
+											style={ { marginTop: '8px' } }
+										>
+											{ __( 'Remove image', 'slider' ) }
+										</Button>
+									) }
 									<Button
 										isDestructive
-										variant="secondary"
-										onClick={ () => handleSlideImageRemove( index ) }
-										style={ { marginTop: '8px' } }
+										onClick={ () =>
+											handleRemoveSlide( index )
+										}
+										style={ {
+											marginTop: '8px',
+											display: 'block',
+										} }
 									>
-										{ __( 'Remove image', 'slider' ) }
+										{ __( 'Remove Slide', 'slider' ) }
 									</Button>
-								) }
-								<Button
-									isDestructive
-									onClick={ () => handleRemoveSlide( index ) }
-									style={ { marginTop: '8px', display: 'block' } }
-								>
-									{ __( 'Remove Slide', 'slider' ) }
-								</Button>
-								<hr />
-							</div>
-						) ) }
+									<hr />
+								</div>
+							);
+						} ) }
 					</div>
 					<Button isPrimary onClick={ handleAddSlide }>
 						{ __( 'Add Slide', 'slider' ) }
 					</Button>
 				</PanelBody>
 
-				{/* Swiper Settings */}
+				{ /* Swiper Settings */ }
 				<PanelBody
 					title={ __( 'Slider Settings', 'slider' ) }
 					initialOpen={ false }
 				>
 					<RangeControl
-						label={ __( 'Slides Per View', 'slider' ) }
+						label={ __(
+							'Slides Per View (desktop ≥768px)',
+							'slider'
+						) }
 						value={ slidesPerView }
 						onChange={ ( value ) =>
 							setAttributes( { slidesPerView: value } )
 						}
 						min={ 1 }
+						max={ 5 }
+					/>
+					<RangeControl
+						label={ __(
+							'Slides Per View (tablet 480–767px)',
+							'slider'
+						) }
+						value={ slidesPerViewTablet }
+						onChange={ ( value ) =>
+							setAttributes( { slidesPerViewTablet: value } )
+						}
+						min={ 0 }
+						max={ 5 }
+					/>
+					<RangeControl
+						label={ __(
+							'Slides Per View (mobile <480px)',
+							'slider'
+						) }
+						value={ slidesPerViewMobile }
+						onChange={ ( value ) =>
+							setAttributes( { slidesPerViewMobile: value } )
+						}
+						min={ 0 }
 						max={ 5 }
 					/>
 					<RangeControl
@@ -317,7 +396,7 @@ export default function Edit( { attributes, setAttributes } ) {
 					/>
 				</PanelBody>
 
-				{/* Pagination Settings */}
+				{ /* Pagination Settings */ }
 				<PanelBody
 					title={ __( 'Pagination', 'slider' ) }
 					initialOpen={ false }
@@ -337,7 +416,10 @@ export default function Edit( { attributes, setAttributes } ) {
 								options={ [
 									{ label: 'Bullets', value: 'bullets' },
 									{ label: 'Fraction', value: 'fraction' },
-									{ label: 'Progressbar', value: 'progressbar' },
+									{
+										label: 'Progressbar',
+										value: 'progressbar',
+									},
 									{ label: 'Custom', value: 'custom' },
 								] }
 								onChange={ ( value ) =>
@@ -347,9 +429,9 @@ export default function Edit( { attributes, setAttributes } ) {
 								}
 							/>
 							<PanelRow>
-								<label>
+								<p className="slider-panel-label">
 									{ __( 'Pagination Color', 'slider' ) }
-								</label>
+								</p>
 								<ColorPalette
 									colors={ colors }
 									value={ paginationColor }
@@ -362,9 +444,12 @@ export default function Edit( { attributes, setAttributes } ) {
 								/>
 							</PanelRow>
 							<PanelRow>
-								<label>
-									{ __( 'Pagination Active Color', 'slider' ) }
-								</label>
+								<p className="slider-panel-label">
+									{ __(
+										'Pagination Active Color',
+										'slider'
+									) }
+								</p>
 								<ColorPalette
 									colors={ colors }
 									value={ paginationActiveColor }
@@ -380,7 +465,7 @@ export default function Edit( { attributes, setAttributes } ) {
 					) }
 				</PanelBody>
 
-				{/* Navigation Settings */}
+				{ /* Navigation Settings */ }
 				<PanelBody
 					title={ __( 'Navigation Arrows', 'slider' ) }
 					initialOpen={ false }
@@ -406,9 +491,9 @@ export default function Edit( { attributes, setAttributes } ) {
 								max={ 64 }
 							/>
 							<PanelRow>
-								<label>
+								<p className="slider-panel-label">
 									{ __( 'Arrow Color', 'slider' ) }
-								</label>
+								</p>
 								<ColorPalette
 									colors={ colors }
 									value={ navigationColor }
@@ -424,7 +509,7 @@ export default function Edit( { attributes, setAttributes } ) {
 					) }
 				</PanelBody>
 
-				{/* Autoplay Settings */}
+				{ /* Autoplay Settings */ }
 				<PanelBody
 					title={ __( 'Autoplay', 'slider' ) }
 					initialOpen={ false }
@@ -464,7 +549,7 @@ export default function Edit( { attributes, setAttributes } ) {
 					) }
 				</PanelBody>
 
-				{/* Layout Settings */}
+				{ /* Layout Settings */ }
 				<PanelBody
 					title={ __( 'Layout & Styling', 'slider' ) }
 					initialOpen={ false }
@@ -481,7 +566,7 @@ export default function Edit( { attributes, setAttributes } ) {
 						) }
 					/>
 					{ ! fullWidth && (
-						<InputControl
+						<TextControl
 							label={ __( 'Container Width', 'slider' ) }
 							value={ containerWidth }
 							onChange={ ( value ) =>
@@ -489,45 +574,68 @@ export default function Edit( { attributes, setAttributes } ) {
 									containerWidth: value,
 								} )
 							}
-							help={ __(
-								'e.g., 100%, 500px, 80vw',
-								'slider'
-							) }
+							help={ __( 'e.g., 100%, 500px, 80vw', 'slider' ) }
 						/>
 					) }
-					<InputControl
+					<TextControl
 						label={ __( 'Container Margin', 'slider' ) }
 						value={ containerMargin }
 						onChange={ ( value ) =>
 							setAttributes( { containerMargin: value } )
 						}
-						help={ __(
-							'e.g., 0, 20px, 10% 0',
-							'slider'
-						) }
+						help={ __( 'e.g., 0, 20px, 10% 0', 'slider' ) }
 					/>
-					<InputControl
+					<TextControl
 						label={ __( 'Container Padding', 'slider' ) }
 						value={ containerPadding }
 						onChange={ ( value ) =>
 							setAttributes( { containerPadding: value } )
 						}
-						help={ __(
-							'e.g., 0, 20px, 10% 0',
-							'slider'
-						) }
+						help={ __( 'e.g., 0, 20px, 10% 0', 'slider' ) }
 					/>
-					<InputControl
-						label={ __( 'Slide Height', 'slider' ) }
-						value={ slideHeight }
+					<SelectControl
+						label={ __( 'Height Mode', 'slider' ) }
+						value={ heightMode }
+						options={ [
+							{
+								label: __( 'Fixed height', 'slider' ),
+								value: 'fixed',
+							},
+							{
+								label: __( 'Aspect ratio', 'slider' ),
+								value: 'aspect-ratio',
+							},
+						] }
 						onChange={ ( value ) =>
-							setAttributes( { slideHeight: value } )
+							setAttributes( { heightMode: value } )
 						}
-						help={ __(
-							'e.g., auto, 300px, 100vh',
-							'slider'
-						) }
 					/>
+					{ heightMode === 'fixed' && (
+						<TextControl
+							label={ __( 'Slide Height', 'slider' ) }
+							value={ slideHeight }
+							onChange={ ( value ) =>
+								setAttributes( { slideHeight: value } )
+							}
+							help={ __( 'e.g., 300px, 50vh', 'slider' ) }
+						/>
+					) }
+					{ heightMode === 'aspect-ratio' && (
+						<SelectControl
+							label={ __( 'Aspect Ratio', 'slider' ) }
+							value={ aspectRatio }
+							options={ [
+								{ label: '16:9', value: '16/9' },
+								{ label: '4:3', value: '4/3' },
+								{ label: '3:2', value: '3/2' },
+								{ label: '1:1', value: '1/1' },
+								{ label: '21:9', value: '21/9' },
+							] }
+							onChange={ ( value ) =>
+								setAttributes( { aspectRatio: value } )
+							}
+						/>
+					) }
 				</PanelBody>
 			</InspectorControls>
 
@@ -548,19 +656,27 @@ export default function Edit( { attributes, setAttributes } ) {
 								<div
 									key={ slide.id }
 									className="swiper-slide"
-									style={ {
-										minHeight: slideHeight || '320px',
-									} }
+									style={
+										heightMode === 'aspect-ratio'
+											? { aspectRatio }
+											: { height: slideHeight || '320px' }
+									}
 								>
 									{ slide.imageUrl && (
 										<img
 											src={ slide.imageUrl }
-											alt={ slide.imageAlt || slide.content || '' }
+											alt={
+												slide.imageAlt ||
+												slide.content ||
+												''
+											}
 											className="slider-slide-image"
 										/>
 									) }
 									{ slide.content && (
-										<p className="slider-slide-caption">{ slide.content }</p>
+										<p className="slider-slide-caption">
+											{ slide.content }
+										</p>
 									) }
 								</div>
 							) ) }

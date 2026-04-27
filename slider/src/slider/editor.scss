@@ -6,12 +6,13 @@
 	margin: 20px 0;
 
 	&.wp-block-webkor-slider--full-width {
-		margin: 20px calc( -50vw + 50% );
+		margin: 20px calc(-50vw + 50%);
 		width: 100vw;
 	}
 }
 
 .wp-block-webkor-slider-preview {
+
 	.swiper {
 		position: relative;
 		width: 100%;
@@ -27,7 +28,6 @@
 	.swiper-slide {
 		position: relative;
 		width: 100%;
-		min-height: 320px;
 		background: #f0f0f0;
 		display: flex;
 		align-items: center;
@@ -38,6 +38,8 @@
 
 	.slider-slide-image {
 		display: block;
+		position: absolute;
+		inset: 0;
 		width: 100%;
 		height: 100%;
 		object-fit: cover;
@@ -47,11 +49,11 @@
 		position: absolute;
 		left: 50%;
 		bottom: 16px;
-		transform: translateX( -50% );
+		transform: translateX(-50%);
 		margin: 0;
 		padding: 8px 14px;
-		max-width: calc( 100% - 40px );
-		background: rgba( 0, 0, 0, 0.6 );
+		max-width: calc(100% - 40px);
+		background: rgba(0, 0, 0, 0.6);
 		color: #fff;
 		font-size: 14px;
 		line-height: 1.4;
@@ -62,7 +64,7 @@
 		position: absolute;
 		left: 50%;
 		bottom: 16px;
-		transform: translateX( -50% );
+		transform: translateX(-50%);
 		z-index: 15;
 	}
 
@@ -70,19 +72,20 @@
 	.swiper-button-next {
 		position: absolute;
 		top: 50%;
-		transform: translateY( -50% );
+		transform: translateY(-50%);
 		z-index: 20;
-		color: var( --swiper-navigation-color, #333 );
+		color: var(--swiper-navigation-color, #333);
 	}
 
 	.swiper-button-prev::after,
 	.swiper-button-next::after {
-		font-size: var( --swiper-navigation-size, 30px );
+		font-size: var(--swiper-navigation-size, 30px);
 		font-weight: 700;
 	}
 }
 
 .slider-slides-list {
+
 	.slide-item {
 		margin-bottom: 15px;
 		padding-bottom: 15px;

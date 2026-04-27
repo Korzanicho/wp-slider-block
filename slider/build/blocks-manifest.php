@@ -9,7 +9,7 @@ return array(
 		'title' => 'Slider',
 		'category' => 'widgets',
 		'icon' => 'images-alt',
-		'description' => 'Responsive slider z pełną konfiguracją i Swiperjs',
+		'description' => 'Responsive slider with pagination, navigation, autoplay, and loop options.',
 		'example' => array(
 			
 		),
@@ -47,6 +47,14 @@ return array(
 			'slidesPerView' => array(
 				'type' => 'number',
 				'default' => 1
+			),
+			'slidesPerViewTablet' => array(
+				'type' => 'number',
+				'default' => 0
+			),
+			'slidesPerViewMobile' => array(
+				'type' => 'number',
+				'default' => 0
 			),
 			'enablePagination' => array(
 				'type' => 'boolean',
@@ -115,6 +123,14 @@ return array(
 			'slideHeight' => array(
 				'type' => 'string',
 				'default' => '320px'
+			),
+			'heightMode' => array(
+				'type' => 'string',
+				'default' => 'fixed'
+			),
+			'aspectRatio' => array(
+				'type' => 'string',
+				'default' => '16/9'
 			),
 			'fullWidth' => array(
 				'type' => 'boolean',

@@ -2,20 +2,20 @@
  * Frontend styles for the Slider block.
  */
 
-@use 'swiper/css' as *;
-@use 'swiper/css/navigation' as *;
-@use 'swiper/css/pagination' as *;
-@use 'swiper/css/effect-fade' as *;
-@use 'swiper/css/effect-cube' as *;
-@use 'swiper/css/effect-coverflow' as *;
-@use 'swiper/css/effect-flip' as *;
+@use "swiper/css" as *;
+@use "swiper/css/navigation" as *;
+@use "swiper/css/pagination" as *;
+@use "swiper/css/effect-fade" as *;
+@use "swiper/css/effect-cube" as *;
+@use "swiper/css/effect-coverflow" as *;
+@use "swiper/css/effect-flip" as *;
 
 .wp-block-webkor-slider {
 	margin: 0;
 
 	&.is-full-width {
-		margin-left: calc( -50vw + 50% );
-		margin-right: calc( -50vw + 50% );
+		margin-left: calc(-50vw + 50%);
+		margin-right: calc(-50vw + 50%);
 		width: 100vw;
 	}
 
@@ -37,7 +37,6 @@
 		align-items: center;
 		justify-content: center;
 		width: 100%;
-		min-height: 320px;
 		background: #f0f0f0;
 		text-align: center;
 		overflow: hidden;
@@ -45,6 +44,8 @@
 
 	.slider-slide-image {
 		display: block;
+		position: absolute;
+		inset: 0;
 		width: 100%;
 		height: 100%;
 		object-fit: cover;
@@ -54,11 +55,11 @@
 		position: absolute;
 		left: 50%;
 		bottom: 16px;
-		transform: translateX( -50% );
+		transform: translateX(-50%);
 		margin: 0;
 		padding: 8px 14px;
-		max-width: calc( 100% - 40px );
-		background: rgba( 0, 0, 0, 0.6 );
+		max-width: calc(100% - 40px);
+		background: rgba(0, 0, 0, 0.6);
 		color: #fff;
 		font-size: 14px;
 		line-height: 1.4;
@@ -69,51 +70,62 @@
 		position: absolute;
 		left: 50%;
 		bottom: 16px;
-		transform: translateX( -50% );
+		transform: translateX(-50%);
 		z-index: 15;
 	}
 
 	.swiper-pagination-bullet {
-		background-color: var( --swiper-pagination-bullet-inactive-color, #999 );
-		opacity: var( --swiper-pagination-bullet-inactive-opacity, 0.5 );
+		background-color: var(--swiper-pagination-bullet-inactive-color, #999);
+		opacity: var(--swiper-pagination-bullet-inactive-opacity, 0.5);
 	}
 
 	.swiper-pagination-bullet.swiper-pagination-bullet-active {
-		background-color: var( --swiper-pagination-color, #333 );
+		background-color: var(--swiper-pagination-color, #333);
 		opacity: 1;
 	}
 
 	.swiper-button-prev,
 	.swiper-button-next {
-		color: var( --swiper-navigation-color, #333 );
+		color: var(--swiper-navigation-color, #333);
 		z-index: 20;
 	}
 
 	.swiper-button-prev::after,
 	.swiper-button-next::after {
-		font-size: var( --swiper-navigation-size, 30px );
+		font-size: var(--swiper-navigation-size, 30px);
 		font-weight: 700;
 	}
 
 	@media ( max-width: 768px ) {
-		.swiper-slide {
-			min-height: 240px;
+
+		.swiper-button-prev,
+		.swiper-button-next {
+			width: 32px;
+			height: 32px;
 		}
 
 		.swiper-button-prev::after,
 		.swiper-button-next::after {
-			font-size: 22px;
+			font-size: 18px;
+		}
+
+		.slider-slide-caption {
+			font-size: 13px;
+			padding: 6px 12px;
 		}
 	}
 
 	@media ( max-width: 480px ) {
-		.swiper-slide {
-			min-height: 200px;
+
+		.swiper-button-prev,
+		.swiper-button-next {
+			display: none;
 		}
 
 		.slider-slide-caption {
 			font-size: 12px;
 			bottom: 10px;
+			max-width: calc(100% - 24px);
 		}
 	}
 }

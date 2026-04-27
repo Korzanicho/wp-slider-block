@@ -705,13 +705,14 @@
   align-items: center;
   justify-content: center;
   width: 100%;
-  min-height: 320px;
   background: #f0f0f0;
   text-align: center;
   overflow: hidden;
 }
 .wp-block-webkor-slider .slider-slide-image {
   display: block;
+  position: absolute;
+  inset: 0;
   width: 100%;
   height: 100%;
   -o-object-fit: cover;
@@ -757,20 +758,28 @@
   font-weight: 700;
 }
 @media (max-width: 768px) {
-  .wp-block-webkor-slider .swiper-slide {
-    min-height: 240px;
+  .wp-block-webkor-slider .swiper-button-prev,
+  .wp-block-webkor-slider .swiper-button-next {
+    width: 32px;
+    height: 32px;
   }
   .wp-block-webkor-slider .swiper-button-prev::after,
   .wp-block-webkor-slider .swiper-button-next::after {
-    font-size: 22px;
+    font-size: 18px;
+  }
+  .wp-block-webkor-slider .slider-slide-caption {
+    font-size: 13px;
+    padding: 6px 12px;
   }
 }
 @media (max-width: 480px) {
-  .wp-block-webkor-slider .swiper-slide {
-    min-height: 200px;
+  .wp-block-webkor-slider .swiper-button-prev,
+  .wp-block-webkor-slider .swiper-button-next {
+    display: none;
   }
   .wp-block-webkor-slider .slider-slide-caption {
     font-size: 12px;
     bottom: 10px;
+    max-width: calc(100% - 24px);
   }
 }

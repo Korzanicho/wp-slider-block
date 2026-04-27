@@ -1,8 +1,8 @@
 {
 	"name": "slider",
 	"version": "0.1.0",
-	"description": "Example block scaffolded with Create Block tool.",
-	"author": "The WordPress Contributors",
+	"description": "Responsive slider with pagination, navigation, autoplay, and loop options.",
+	"author": "Webkor",
 	"license": "GPL-2.0-or-later",
 	"main": "build/index.js",
 	"scripts": {
@@ -17,6 +17,8 @@
 	"dependencies": {
 		"@wordpress/block-editor": "latest",
 		"@wordpress/blocks": "latest",
+		"@wordpress/components": "latest",
+		"@wordpress/element": "latest",
 		"@wordpress/i18n": "latest",
 		"swiper": "^12.1.3"
 	},
