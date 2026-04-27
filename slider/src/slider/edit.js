@@ -5,6 +5,7 @@ import {
 	InspectorControls,
 	MediaUpload,
 	MediaUploadCheck,
+	PanelColorSettings,
 } from '@wordpress/block-editor';
 import Swiper from 'swiper';
 import {
@@ -18,11 +19,9 @@ import {
 } from 'swiper/modules';
 import {
 	PanelBody,
-	PanelRow,
 	TextControl,
 	ToggleControl,
 	SelectControl,
-	ColorPalette,
 	RangeControl,
 	Button,
 } from '@wordpress/components';
@@ -37,6 +36,20 @@ const SWIPER_MODULES = [
 	EffectCoverflow,
 	EffectFlip,
 ];
+
+function normalizeCssSize( value, fallback ) {
+	if ( ! value || value === 'auto' ) {
+		return fallback;
+	}
+
+	const trimmed = String( value ).trim();
+
+	if ( /^\d+(\.\d+)?$/.test( trimmed ) ) {
+		return `${ trimmed }px`;
+	}
+
+	return trimmed;
+}
 
 export default function Edit( { attributes, setAttributes } ) {
 	const previewRef = useRef( null );
@@ -79,6 +92,25 @@ export default function Edit( { attributes, setAttributes } ) {
 			marginLeft: fullWidth ? 'calc(-50vw + 50%)' : undefined,
 		},
 	} );
+
+	const normalizedHeightMode =
+		heightMode === 'aspect-ratio' ? 'aspect-ratio' : 'fixed';
+	const resolvedFixedHeight = normalizeCssSize( slideHeight, '320px' );
+	const resolvedAspectRatio = ( aspectRatio || '16/9' ).replace( ':', '/' );
+	const previewSwiperSizeStyle =
+		normalizedHeightMode === 'aspect-ratio'
+			? { aspectRatio: resolvedAspectRatio }
+			: {
+					height: resolvedFixedHeight,
+					minHeight: resolvedFixedHeight,
+			  };
+	const previewSlideSizeStyle =
+		normalizedHeightMode === 'aspect-ratio'
+			? { aspectRatio: resolvedAspectRatio }
+			: {
+					height: resolvedFixedHeight,
+					minHeight: resolvedFixedHeight,
+			  };
 
 	const handleAddSlide = () => {
 		const newSlide = {
@@ -127,15 +159,6 @@ export default function Edit( { attributes, setAttributes } ) {
 		setAttributes( { slides: updatedSlides } );
 	};
 
-	const colors = [
-		{ name: 'Black', color: '#000000' },
-		{ name: 'White', color: '#ffffff' },
-		{ name: 'Gray', color: '#999999' },
-		{ name: 'Light Gray', color: '#e0e0e0' },
-		{ name: 'Blue', color: '#0073aa' },
-		{ name: 'Red', color: '#d32f2f' },
-	];
-
 	useEffect( () => {
 		if ( ! previewRef.current ) {
 			return undefined;
@@ -156,48 +179,100 @@ export default function Edit( { attributes, setAttributes } ) {
 		const nextEl = swiperElement.querySelector( '.swiper-button-next' );
 		const prevEl = swiperElement.querySelector( '.swiper-button-prev' );
 
-		previewInstanceRef.current = new Swiper( swiperElement, {
-			modules: SWIPER_MODULES,
-			breakpointsBase: 'container',
-			observeParents: true,
-			observer: true,
-			spaceBetween,
-			slidesPerView:
-				slidesPerViewMobile > 0 ? slidesPerViewMobile : slidesPerView,
-			breakpoints: {
-				480: {
-					slidesPerView:
-						slidesPerViewTablet > 0
-							? slidesPerViewTablet
-							: slidesPerView,
+		const applyPreviewHeightStyles = () => {
+			const wrapperElement =
+				swiperElement.querySelector( '.swiper-wrapper' );
+			const slideElements =
+				swiperElement.querySelectorAll( '.swiper-slide' );
+
+			if ( normalizedHeightMode === 'aspect-ratio' ) {
+				swiperElement.style.aspectRatio = resolvedAspectRatio;
+				swiperElement.style.removeProperty( 'height' );
+				swiperElement.style.removeProperty( 'min-height' );
+
+				if ( wrapperElement ) {
+					wrapperElement.style.height = '100%';
+					wrapperElement.style.minHeight = '100%';
+				}
+
+				slideElements.forEach( ( slideElement ) => {
+					slideElement.style.height = '100%';
+					slideElement.style.minHeight = '100%';
+					slideElement.style.aspectRatio = resolvedAspectRatio;
+				} );
+
+				return;
+			}
+
+			swiperElement.style.removeProperty( 'aspect-ratio' );
+			swiperElement.style.height = resolvedFixedHeight;
+			swiperElement.style.minHeight = resolvedFixedHeight;
+
+			if ( wrapperElement ) {
+				wrapperElement.style.height = resolvedFixedHeight;
+				wrapperElement.style.minHeight = resolvedFixedHeight;
+			}
+
+			slideElements.forEach( ( slideElement ) => {
+				slideElement.style.height = resolvedFixedHeight;
+				slideElement.style.minHeight = resolvedFixedHeight;
+				slideElement.style.removeProperty( 'aspect-ratio' );
+			} );
+		};
+
+		applyPreviewHeightStyles();
+
+		try {
+			previewInstanceRef.current = new Swiper( swiperElement, {
+				modules: SWIPER_MODULES,
+				breakpointsBase: 'container',
+				observeParents: true,
+				observer: true,
+				spaceBetween,
+				slidesPerView:
+					slidesPerViewMobile > 0
+						? slidesPerViewMobile
+						: slidesPerView,
+				breakpoints: {
+					480: {
+						slidesPerView:
+							slidesPerViewTablet > 0
+								? slidesPerViewTablet
+								: slidesPerView,
+					},
+					768: { slidesPerView },
 				},
-				768: { slidesPerView },
-			},
-			loop,
-			effect,
-			speed,
-			autoplay: enableAutoplay
-				? {
-						delay: autoplayDelay,
-						disableOnInteraction: autoplayDisableOnInteraction,
-				  }
-				: false,
-			pagination:
-				enablePagination && paginationEl
+				loop,
+				effect,
+				speed,
+				autoplay: enableAutoplay
 					? {
-							el: paginationEl,
-							type: paginationType,
-							clickable: true,
+							delay: autoplayDelay,
+							disableOnInteraction: autoplayDisableOnInteraction,
 					  }
 					: false,
-			navigation:
-				enableNavigation && prevEl && nextEl
-					? {
-							prevEl,
-							nextEl,
-					  }
-					: false,
-		} );
+				pagination:
+					enablePagination && paginationEl
+						? {
+								el: paginationEl,
+								type: paginationType,
+								clickable: true,
+						  }
+						: false,
+				navigation:
+					enableNavigation && prevEl && nextEl
+						? {
+								prevEl,
+								nextEl,
+						  }
+						: false,
+			} );
+
+			applyPreviewHeightStyles();
+			previewInstanceRef.current.update();
+		} catch {
+			previewInstanceRef.current = null;
+		}
 
 		return () => {
 			if ( previewInstanceRef.current ) {
@@ -211,6 +286,9 @@ export default function Edit( { attributes, setAttributes } ) {
 		slidesPerView,
 		slidesPerViewTablet,
 		slidesPerViewMobile,
+		normalizedHeightMode,
+		resolvedFixedHeight,
+		resolvedAspectRatio,
 		enablePagination,
 		paginationType,
 		enableNavigation,
@@ -428,39 +506,6 @@ export default function Edit( { attributes, setAttributes } ) {
 									} )
 								}
 							/>
-							<PanelRow>
-								<p className="slider-panel-label">
-									{ __( 'Pagination Color', 'slider' ) }
-								</p>
-								<ColorPalette
-									colors={ colors }
-									value={ paginationColor }
-									onChange={ ( color ) =>
-										setAttributes( {
-											paginationColor: color,
-										} )
-									}
-									disableCustomColors={ false }
-								/>
-							</PanelRow>
-							<PanelRow>
-								<p className="slider-panel-label">
-									{ __(
-										'Pagination Active Color',
-										'slider'
-									) }
-								</p>
-								<ColorPalette
-									colors={ colors }
-									value={ paginationActiveColor }
-									onChange={ ( color ) =>
-										setAttributes( {
-											paginationActiveColor: color,
-										} )
-									}
-									disableCustomColors={ false }
-								/>
-							</PanelRow>
 						</>
 					) }
 				</PanelBody>
@@ -490,21 +535,6 @@ export default function Edit( { attributes, setAttributes } ) {
 								min={ 16 }
 								max={ 64 }
 							/>
-							<PanelRow>
-								<p className="slider-panel-label">
-									{ __( 'Arrow Color', 'slider' ) }
-								</p>
-								<ColorPalette
-									colors={ colors }
-									value={ navigationColor }
-									onChange={ ( color ) =>
-										setAttributes( {
-											navigationColor: color,
-										} )
-									}
-									disableCustomColors={ false }
-								/>
-							</PanelRow>
 						</>
 					) }
 				</PanelBody>
@@ -637,6 +667,36 @@ export default function Edit( { attributes, setAttributes } ) {
 						/>
 					) }
 				</PanelBody>
+
+				<PanelColorSettings
+					title={ __( 'Color', 'slider' ) }
+					colorSettings={ [
+						{
+							value: paginationColor,
+							onChange: ( color ) =>
+								setAttributes( {
+									paginationColor: color || '#999999',
+								} ),
+							label: __( 'Pagination', 'slider' ),
+						},
+						{
+							value: paginationActiveColor,
+							onChange: ( color ) =>
+								setAttributes( {
+									paginationActiveColor: color || '#333333',
+								} ),
+							label: __( 'Pagination Active', 'slider' ),
+						},
+						{
+							value: navigationColor,
+							onChange: ( color ) =>
+								setAttributes( {
+									navigationColor: color || '#333333',
+								} ),
+							label: __( 'Navigation Arrows', 'slider' ),
+						},
+					] }
+				/>
 			</InspectorControls>
 
 			<div { ...blockProps } ref={ previewRef }>
@@ -649,6 +709,7 @@ export default function Edit( { attributes, setAttributes } ) {
 								paginationColor,
 							'--swiper-navigation-color': navigationColor,
 							'--swiper-navigation-size': `${ navigationSize }px`,
+							...previewSwiperSizeStyle,
 						} }
 					>
 						<div className="swiper-wrapper">
@@ -656,11 +717,7 @@ export default function Edit( { attributes, setAttributes } ) {
 								<div
 									key={ slide.id }
 									className="swiper-slide"
-									style={
-										heightMode === 'aspect-ratio'
-											? { aspectRatio }
-											: { height: slideHeight || '320px' }
-									}
+									style={ previewSlideSizeStyle }
 								>
 									{ slide.imageUrl && (
 										<img
