@@ -53,11 +53,9 @@
 		margin: 0;
 		padding: 8px 14px;
 		max-width: calc(100% - 40px);
-		background: rgba(0, 0, 0, 0.6);
-		color: #fff;
-		font-size: 14px;
 		line-height: 1.4;
-		border-radius: 999px;
+		z-index: 2;
+		/* Position + typography from inline editor styles */
 	}
 
 	.swiper-pagination {

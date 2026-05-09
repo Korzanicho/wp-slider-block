@@ -5,7 +5,7 @@ return array(
 		'$schema' => 'https://schemas.wp.org/trunk/block.json',
 		'apiVersion' => 3,
 		'name' => 'webkor/slider',
-		'version' => '0.2.0',
+		'version' => '0.4.0',
 		'title' => 'Slider',
 		'category' => 'widgets',
 		'icon' => 'images-alt',
@@ -29,14 +29,16 @@ return array(
 						'content' => 'Slide 1',
 						'imageId' => 0,
 						'imageUrl' => '',
-						'imageAlt' => ''
+						'imageAlt' => '',
+						'captionPosition' => 'bottom-center'
 					),
 					array(
 						'id' => 'slide-2',
 						'content' => 'Slide 2',
 						'imageId' => 0,
 						'imageUrl' => '',
-						'imageAlt' => ''
+						'imageAlt' => '',
+						'captionPosition' => 'bottom-center'
 					)
 				)
 			),
@@ -135,6 +137,34 @@ return array(
 			'fullWidth' => array(
 				'type' => 'boolean',
 				'default' => false
+			),
+			'captionFontSize' => array(
+				'type' => 'number',
+				'default' => 15
+			),
+			'captionFontWeight' => array(
+				'type' => 'string',
+				'default' => '400'
+			),
+			'captionFontFamily' => array(
+				'type' => 'string',
+				'default' => 'inherit'
+			),
+			'captionTextColor' => array(
+				'type' => 'string',
+				'default' => '#ffffff'
+			),
+			'captionBackgroundColor' => array(
+				'type' => 'string',
+				'default' => '#000000'
+			),
+			'captionBackgroundOpacity' => array(
+				'type' => 'number',
+				'default' => 60
+			),
+			'captionBorderRadius' => array(
+				'type' => 'string',
+				'default' => 'pill'
 			)
 		),
 		'textdomain' => 'slider',

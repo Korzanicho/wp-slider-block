@@ -59,11 +59,13 @@
 		margin: 0;
 		padding: 8px 14px;
 		max-width: calc(100% - 40px);
+		line-height: 1.4;
+		z-index: 2;
+		/* Colors, font, radius: inline styles from block attributes; fallbacks for older content */
 		background: rgba(0, 0, 0, 0.6);
 		color: #fff;
 		font-size: 14px;
-		line-height: 1.4;
-		border-radius: 999px;
+		border-radius: 9999px;
 	}
 
 	.swiper-pagination {
@@ -110,7 +112,6 @@
 		}
 
 		.slider-slide-caption {
-			font-size: 13px;
 			padding: 6px 12px;
 		}
 	}
@@ -123,7 +124,6 @@
 		}
 
 		.slider-slide-caption {
-			font-size: 12px;
 			bottom: 10px;
 			max-width: calc(100% - 24px);
 		}

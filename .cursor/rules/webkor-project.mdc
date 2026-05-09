@@ -1,0 +1,11 @@
+---
+description: Kontekst repozytorium WordPress + wtyczka Slider, build i wp-env
+alwaysApply: true
+---
+
+# Repozytorium Webkor / WordPress
+
+- Główny katalog: środowisko dev (`.wp-env.json`). Wtyczka z blokiem: **`slider/`**.
+- WordPress rejestruje blok z **`slider/build/`** (`blocks-manifest.php` + skompilowane assety). Nie traktuj `build/` jako źródła — edytuj **`slider/src/slider/`**.
+- Po zmianach w kodzie bloku uruchom w `slider/`: `CI=true npm run build` (lub `npm run build`).
+- Szczegóły architektury bloku i checklisty: `AGENTS.md` oraz skill `.cursor/skills/webkor-slider-block/SKILL.md`.

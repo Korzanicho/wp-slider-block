@@ -26,6 +26,50 @@ import {
 	Button,
 } from '@wordpress/components';
 import './editor.scss';
+import {
+	getCaptionInlineStyle,
+	getCaptionPositionStyle,
+	CAPTION_POSITION_DEFAULT,
+} from './caption-style';
+
+const CAPTION_POSITION_OPTIONS = [
+	{
+		label: __( 'Top left', 'slider' ),
+		value: 'top-left',
+	},
+	{
+		label: __( 'Top center', 'slider' ),
+		value: 'top-center',
+	},
+	{
+		label: __( 'Top right', 'slider' ),
+		value: 'top-right',
+	},
+	{
+		label: __( 'Center left', 'slider' ),
+		value: 'center-left',
+	},
+	{
+		label: __( 'Center', 'slider' ),
+		value: 'center',
+	},
+	{
+		label: __( 'Center right', 'slider' ),
+		value: 'center-right',
+	},
+	{
+		label: __( 'Bottom left', 'slider' ),
+		value: 'bottom-left',
+	},
+	{
+		label: __( 'Bottom center', 'slider' ),
+		value: 'bottom-center',
+	},
+	{
+		label: __( 'Bottom right', 'slider' ),
+		value: 'bottom-right',
+	},
+];
 
 const SWIPER_MODULES = [
 	Navigation,
@@ -82,7 +126,24 @@ export default function Edit( { attributes, setAttributes } ) {
 		heightMode,
 		aspectRatio,
 		fullWidth,
+		captionFontSize,
+		captionFontWeight,
+		captionFontFamily,
+		captionTextColor,
+		captionBackgroundColor,
+		captionBackgroundOpacity,
+		captionBorderRadius,
 	} = attributes;
+
+	const captionStyle = getCaptionInlineStyle( {
+		captionFontSize,
+		captionFontWeight,
+		captionFontFamily,
+		captionTextColor,
+		captionBackgroundColor,
+		captionBackgroundOpacity,
+		captionBorderRadius,
+	} );
 
 	const blockProps = useBlockProps( {
 		className: fullWidth ? 'wp-block-webkor-slider--full-width' : '',
@@ -120,6 +181,7 @@ export default function Edit( { attributes, setAttributes } ) {
 			imageId: 0,
 			imageUrl: '',
 			imageAlt: '',
+			captionPosition: CAPTION_POSITION_DEFAULT,
 		};
 		setAttributes( {
 			slides: [ ...slides, newSlide ],
@@ -135,6 +197,15 @@ export default function Edit( { attributes, setAttributes } ) {
 	const handleUpdateSlide = ( index, content ) => {
 		const updatedSlides = [ ...slides ];
 		updatedSlides[ index ].content = content;
+		setAttributes( { slides: updatedSlides } );
+	};
+
+	const handleUpdateSlideCaptionPosition = ( index, captionPosition ) => {
+		const updatedSlides = [ ...slides ];
+		updatedSlides[ index ] = {
+			...updatedSlides[ index ],
+			captionPosition,
+		};
 		setAttributes( { slides: updatedSlides } );
 	};
 
@@ -399,6 +470,25 @@ export default function Edit( { attributes, setAttributes } ) {
 										'slider'
 									) }
 								/>
+								{ ( slide.content || '' ).trim() !== '' && (
+									<SelectControl
+										label={ __(
+											'Caption position',
+											'slider'
+										) }
+										value={
+											slide.captionPosition ||
+											CAPTION_POSITION_DEFAULT
+										}
+										options={ CAPTION_POSITION_OPTIONS }
+										onChange={ ( value ) =>
+											handleUpdateSlideCaptionPosition(
+												index,
+												value
+											)
+										}
+									/>
+								) }
 								{ slide.imageUrl && (
 									<div className="slider-slide-image-preview">
 										<img
@@ -467,6 +557,139 @@ export default function Edit( { attributes, setAttributes } ) {
 					<Button isPrimary onClick={ handleAddSlide }>
 						{ __( 'Add Slide', 'slider' ) }
 					</Button>
+				</PanelBody>
+
+				<PanelBody
+					title={ __( 'Slide captions', 'slider' ) }
+					initialOpen={ false }
+				>
+					<RangeControl
+						label={ __( 'Font size (px)', 'slider' ) }
+						value={ captionFontSize }
+						onChange={ ( value ) =>
+							setAttributes( { captionFontSize: value } )
+						}
+						min={ 10 }
+						max={ 48 }
+					/>
+					<SelectControl
+						label={ __( 'Font', 'slider' ) }
+						value={ captionFontFamily }
+						options={ [
+							{
+								label: __( 'Theme default', 'slider' ),
+								value: 'inherit',
+							},
+							{
+								label: __( 'System UI', 'slider' ),
+								value: 'system-ui, sans-serif',
+							},
+							{
+								label: __( 'Georgia (serif)', 'slider' ),
+								value: 'Georgia, serif',
+							},
+							{
+								label: __( 'Times New Roman', 'slider' ),
+								value: '"Times New Roman", Times, serif',
+							},
+							{
+								label: __( 'Arial', 'slider' ),
+								value: 'Arial, Helvetica, sans-serif',
+							},
+							{
+								label: __( 'Modern sans', 'slider' ),
+								value:
+									'"Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif',
+							},
+							{
+								label: __( 'Monospace', 'slider' ),
+								value: 'ui-monospace, monospace',
+							},
+						] }
+						onChange={ ( value ) =>
+							setAttributes( { captionFontFamily: value } )
+						}
+					/>
+					<SelectControl
+						label={ __( 'Font weight', 'slider' ) }
+						value={ captionFontWeight }
+						options={ [
+							{ label: __( 'Normal', 'slider' ), value: '400' },
+							{ label: __( 'Medium', 'slider' ), value: '500' },
+							{ label: __( 'Semibold', 'slider' ), value: '600' },
+							{ label: __( 'Bold', 'slider' ), value: '700' },
+						] }
+						onChange={ ( value ) =>
+							setAttributes( { captionFontWeight: value } )
+						}
+					/>
+					<SelectControl
+						label={ __( 'Corner radius', 'slider' ) }
+						value={ captionBorderRadius }
+						options={ [
+							{
+								label: __( 'Pill', 'slider' ),
+								value: 'pill',
+							},
+							{
+								label: __( 'None', 'slider' ),
+								value: '0',
+							},
+							{
+								label: __( 'Small (4px)', 'slider' ),
+								value: '4',
+							},
+							{
+								label: __( 'Medium (8px)', 'slider' ),
+								value: '8',
+							},
+							{
+								label: __( 'Large (16px)', 'slider' ),
+								value: '16',
+							},
+							{
+								label: __( 'Extra large (24px)', 'slider' ),
+								value: '24',
+							},
+						] }
+						onChange={ ( value ) =>
+							setAttributes( { captionBorderRadius: value } )
+						}
+					/>
+					<RangeControl
+						label={ __( 'Background opacity (%)', 'slider' ) }
+						value={ captionBackgroundOpacity }
+						onChange={ ( value ) =>
+							setAttributes( { captionBackgroundOpacity: value } )
+						}
+						min={ 0 }
+						max={ 100 }
+						help={ __(
+							'0% = fully transparent background.',
+							'slider'
+						) }
+					/>
+					<PanelColorSettings
+						title={ __( 'Caption colors', 'slider' ) }
+						colorSettings={ [
+							{
+								value: captionTextColor,
+								onChange: ( color ) =>
+									setAttributes( {
+										captionTextColor: color || '#ffffff',
+									} ),
+								label: __( 'Text', 'slider' ),
+							},
+							{
+								value: captionBackgroundColor,
+								onChange: ( color ) =>
+									setAttributes( {
+										captionBackgroundColor: color || '#000000',
+									} ),
+								label: __( 'Background (with opacity above)', 'slider' ),
+							},
+						] }
+					/>
 				</PanelBody>
 
 				{ /* Swiper Settings */ }
@@ -809,7 +1032,15 @@ export default function Edit( { attributes, setAttributes } ) {
 										/>
 									) }
 									{ slide.content && (
-										<p className="slider-slide-caption">
+										<p
+											className="slider-slide-caption"
+											style={ {
+												...getCaptionPositionStyle(
+													slide.captionPosition
+												),
+												...captionStyle,
+											} }
+										>
 											{ slide.content }
 										</p>
 									) }

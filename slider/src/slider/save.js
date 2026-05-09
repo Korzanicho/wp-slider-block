@@ -1,4 +1,8 @@
 import { useBlockProps } from '@wordpress/block-editor';
+import {
+	getCaptionInlineStyle,
+	getCaptionPositionStyle,
+} from './caption-style';
 
 export default function save( { attributes } ) {
 	const {
@@ -27,7 +31,24 @@ export default function save( { attributes } ) {
 		heightMode,
 		aspectRatio,
 		fullWidth,
+		captionFontSize,
+		captionFontWeight,
+		captionFontFamily,
+		captionTextColor,
+		captionBackgroundColor,
+		captionBackgroundOpacity,
+		captionBorderRadius,
 	} = attributes;
+
+	const captionStyle = getCaptionInlineStyle( {
+		captionFontSize,
+		captionFontWeight,
+		captionFontFamily,
+		captionTextColor,
+		captionBackgroundColor,
+		captionBackgroundOpacity,
+		captionBorderRadius,
+	} );
 
 	const swiperConfig = {
 		spaceBetween,
@@ -120,7 +141,15 @@ export default function save( { attributes } ) {
 								/>
 							) }
 							{ slide.content && (
-								<p className="slider-slide-caption">
+								<p
+									className="slider-slide-caption"
+									style={ {
+										...getCaptionPositionStyle(
+											slide.captionPosition
+										),
+										...captionStyle,
+									} }
+								>
 									{ slide.content }
 								</p>
 							) }

@@ -2,7 +2,7 @@
 	"$schema": "https://schemas.wp.org/trunk/block.json",
 	"apiVersion": 3,
 	"name": "webkor/slider",
-	"version": "0.2.0",
+	"version": "0.4.0",
 	"title": "Slider",
 	"category": "widgets",
 	"icon": "images-alt",
@@ -21,14 +21,16 @@
 					"content": "Slide 1",
 					"imageId": 0,
 					"imageUrl": "",
-					"imageAlt": ""
+					"imageAlt": "",
+					"captionPosition": "bottom-center"
 				},
 				{
 					"id": "slide-2",
 					"content": "Slide 2",
 					"imageId": 0,
 					"imageUrl": "",
-					"imageAlt": ""
+					"imageAlt": "",
+					"captionPosition": "bottom-center"
 				}
 			]
 		},
@@ -127,6 +129,34 @@
 		"fullWidth": {
 			"type": "boolean",
 			"default": false
+		},
+		"captionFontSize": {
+			"type": "number",
+			"default": 15
+		},
+		"captionFontWeight": {
+			"type": "string",
+			"default": "400"
+		},
+		"captionFontFamily": {
+			"type": "string",
+			"default": "inherit"
+		},
+		"captionTextColor": {
+			"type": "string",
+			"default": "#ffffff"
+		},
+		"captionBackgroundColor": {
+			"type": "string",
+			"default": "#000000"
+		},
+		"captionBackgroundOpacity": {
+			"type": "number",
+			"default": 60
+		},
+		"captionBorderRadius": {
+			"type": "string",
+			"default": "pill"
 		}
 	},
 	"textdomain": "slider",

@@ -1,0 +1,13 @@
+---
+description: Konwencje bloku Gutenberg webkor/slider (ścieżki, save/edit, podpisy)
+globs: slider/src/slider/**/*
+alwaysApply: false
+---
+
+# Blok `webkor/slider`
+
+- **Nazwa bloku:** `webkor/slider`. API 3, `block.json` w `slider/src/slider/`.
+- **Podgląd w edytorze:** `edit.js` inicjalizuje Swiper; **frontend:** `save.js` + `view.js` (`data-swiper-config`).
+- **Podpisy:** typografia i kolory — atrybuty bloku; **pozycja podpisu** — `slide.captionPosition` (fallback `bottom-center`). Wspólna logika w **`caption-style.js`** — zmiany wizualne podpisów preferuj tam, a w `edit.js`/`save.js` tylko łącz style.
+- **Nowe atrybuty:** dopisz do `block.json`, użyj w `edit.js` + `save.js` (i ewent. SCSS). Zwiększ sensownie wersję w `block.json` / `slider.php` / `package.json` przy większych zmianach.
+- **i18n:** teksty widoczne dla użytkownika przez `__()` z domeną `'slider'`.
