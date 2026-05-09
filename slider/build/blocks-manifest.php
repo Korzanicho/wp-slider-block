@@ -5,7 +5,7 @@ return array(
 		'$schema' => 'https://schemas.wp.org/trunk/block.json',
 		'apiVersion' => 3,
 		'name' => 'webkor/slider',
-		'version' => '0.4.0',
+		'version' => '0.5.0',
 		'title' => 'Slider',
 		'category' => 'widgets',
 		'icon' => 'images-alt',
@@ -165,6 +165,18 @@ return array(
 			'captionBorderRadius' => array(
 				'type' => 'string',
 				'default' => 'pill'
+			),
+			'modalEnabled' => array(
+				'type' => 'boolean',
+				'default' => false
+			),
+			'isModalOnly' => array(
+				'type' => 'boolean',
+				'default' => false
+			),
+			'modalTriggerSelector' => array(
+				'type' => 'string',
+				'default' => ''
 			)
 		),
 		'textdomain' => 'slider',

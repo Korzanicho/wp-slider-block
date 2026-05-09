@@ -2,7 +2,7 @@
   "$schema": "https://schemas.wp.org/trunk/block.json",
   "apiVersion": 3,
   "name": "webkor/slider",
-  "version": "0.4.0",
+  "version": "0.5.0",
   "title": "Slider",
   "category": "widgets",
   "icon": "images-alt",
@@ -160,6 +160,18 @@
     "captionBorderRadius": {
       "type": "string",
       "default": "pill"
+    },
+    "modalEnabled": {
+      "type": "boolean",
+      "default": false
+    },
+    "isModalOnly": {
+      "type": "boolean",
+      "default": false
+    },
+    "modalTriggerSelector": {
+      "type": "string",
+      "default": ""
     }
   },
   "textdomain": "slider",

@@ -133,6 +133,9 @@ export default function Edit( { attributes, setAttributes } ) {
 		captionBackgroundColor,
 		captionBackgroundOpacity,
 		captionBorderRadius,
+		modalEnabled,
+		isModalOnly,
+		modalTriggerSelector,
 	} = attributes;
 
 	const captionStyle = getCaptionInlineStyle( {
@@ -598,8 +601,7 @@ export default function Edit( { attributes, setAttributes } ) {
 							},
 							{
 								label: __( 'Modern sans', 'slider' ),
-								value:
-									'"Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif',
+								value: '"Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif',
 							},
 							{
 								label: __( 'Monospace', 'slider' ),
@@ -684,12 +686,68 @@ export default function Edit( { attributes, setAttributes } ) {
 								value: captionBackgroundColor,
 								onChange: ( color ) =>
 									setAttributes( {
-										captionBackgroundColor: color || '#000000',
+										captionBackgroundColor:
+											color || '#000000',
 									} ),
-								label: __( 'Background (with opacity above)', 'slider' ),
+								label: __(
+									'Background (with opacity above)',
+									'slider'
+								),
 							},
 						] }
 					/>
+				</PanelBody>
+
+				<PanelBody
+					title={ __( 'Lightbox / modal', 'slider' ) }
+					initialOpen={ false }
+				>
+					<ToggleControl
+						label={ __(
+							'Open in fullscreen on trigger',
+							'slider'
+						) }
+						checked={ modalEnabled }
+						onChange={ ( value ) =>
+							setAttributes( { modalEnabled: value } )
+						}
+						help={ __(
+							'Clicking matching elements opens the slider in an overlay. Close with the button, backdrop click, or Escape.',
+							'slider'
+						) }
+					/>
+					{ modalEnabled && (
+						<>
+							<TextControl
+								label={ __( 'Trigger CSS selector', 'slider' ) }
+								value={ modalTriggerSelector }
+								onChange={ ( value ) =>
+									setAttributes( {
+										modalTriggerSelector: value,
+									} )
+								}
+								placeholder=".open-my-slider"
+								help={ __(
+									'Any valid selector (e.g. .class or #id). Several elements may share the same class — each opens this slider. Use different classes if you have multiple sliders on one page.',
+									'slider'
+								) }
+							/>
+							<ToggleControl
+								label={ __(
+									'Modal only (hide inline slider)',
+									'slider'
+								) }
+								checked={ isModalOnly }
+								onChange={ ( value ) =>
+									setAttributes( { isModalOnly: value } )
+								}
+								help={ __(
+									'If off, the slider stays visible on the page and can also open in the overlay.',
+									'slider'
+								) }
+							/>
+						</>
+					) }
 				</PanelBody>
 
 				{ /* Swiper Settings */ }

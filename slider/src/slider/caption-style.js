@@ -90,7 +90,14 @@ const POSITION_STYLES = {
 /**
  * Inline styles for slide captions (editor + saved markup).
  *
- * @param {Object} attrs Caption-related block attributes.
+ * @param {Object} attrs                            Caption-related block attributes.
+ * @param {number} [attrs.captionFontSize]
+ * @param {string} [attrs.captionFontWeight]
+ * @param {string} [attrs.captionFontFamily]
+ * @param {string} [attrs.captionTextColor]
+ * @param {string} [attrs.captionBackgroundColor]
+ * @param {number} [attrs.captionBackgroundOpacity]
+ * @param {string} [attrs.captionBorderRadius]
  * @return {Object} Style object for the caption element.
  */
 export function getCaptionInlineStyle( {
@@ -102,8 +109,7 @@ export function getCaptionInlineStyle( {
 	captionBackgroundOpacity,
 	captionBorderRadius,
 } ) {
-	const fontSize =
-		typeof captionFontSize === 'number' ? captionFontSize : 15;
+	const fontSize = typeof captionFontSize === 'number' ? captionFontSize : 15;
 	const opacityRaw =
 		typeof captionBackgroundOpacity === 'number'
 			? captionBackgroundOpacity
@@ -120,7 +126,9 @@ export function getCaptionInlineStyle( {
 
 	const radiusKey = captionBorderRadius || 'pill';
 	const borderRadius =
-		radiusKey === 'pill' ? '9999px' : `${ parseInt( radiusKey, 10 ) || 0 }px`;
+		radiusKey === 'pill'
+			? '9999px'
+			: `${ parseInt( radiusKey, 10 ) || 0 }px`;
 
 	const style = {
 		fontSize: `${ fontSize }px`,
